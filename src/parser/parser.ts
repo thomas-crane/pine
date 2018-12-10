@@ -271,10 +271,15 @@ export class Parser {
     while (!this.accept(NodeType.RParen)) {
       const expr = this.expression();
       if (!expr) {
+        this.printLastTokens();
         throw new Error(`Undefined expression in fn call arg.`);
       }
-      fnCall.args.push(this.expression());
+      fnCall.args.push(expr);
+      if (this.accept(NodeType.Comma)) {
+        this.consume(NodeType.Comma);
+      }
     }
+    this.consume(NodeType.RParen);
     return fnCall;
   }
 
@@ -315,7 +320,12 @@ export class Parser {
   }
 
   memberAccess(): MemberAccess {
-    const id = this.id();
+    let id: Id | Self;
+    if (this.accept(NodeType.Self)) {
+      id = this.self();
+    } else {
+      id = this.id();
+    }
     let val: Expression;
     this.consume(NodeType.Colon);
     if (this.peek()[0] === NodeType.LParen) {
@@ -327,7 +337,12 @@ export class Parser {
   }
 
   staticAccess(): StaticAccess {
-    const id = this.id();
+    let id: Id | Self;
+    if (this.accept(NodeType.Self)) {
+      id = this.self();
+    } else {
+      id = this.id();
+    }
     let val: Expression;
     this.consume(NodeType.DoubleColon);
     if (this.peek()[0] === NodeType.LParen) {
@@ -393,7 +408,12 @@ export class Parser {
       return expr;
     }
     if (this.accept(NodeType.Self)) {
-      return this.self();
+      const peek = this.peek()[0];
+      switch (peek) {
+        case NodeType.Colon: return this.memberAccess();
+        case NodeType.DoubleColon: return this.staticAccess();
+        default: return this.self();
+      }
     }
     if (this.accept(NodeType.Num)) {
       const num = this.current.value as number;
