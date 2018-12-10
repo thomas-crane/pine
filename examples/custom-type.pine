@@ -1,0 +1,18 @@
+type Point
+  | num x
+  | num y
+  ;
+
+type Point has {
+
+  fn new(num x, num y) -> Point {
+    Point {
+      x = x,
+      y = y,
+    }
+  }
+
+  fn scale(self, num factor) -> Point {
+    Point::new(self:x * factor, self:y * factor)
+  }
+}

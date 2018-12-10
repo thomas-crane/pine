@@ -1,0 +1,40 @@
+{
+  "name": "pine",
+  "version": "0.0.0",
+  "description": "A Pine compiler written in TypeScript.",
+  "main": "dist/index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.12",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.2"
+  },
+  "scripts": {
+    "clean": "rimraf ./dist",
+    "compile": "tsc -p .",
+    "build": "npm run clean && npm run compile",
+    "lint": "tslint -p .",
+    "test": "mocha -r ts-node/register test/*/*.spec.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomas-crane/pine.git"
+  },
+  "keywords": [
+    "programming-language",
+    "compiler",
+    "typescript"
+  ],
+  "author": "tcrane",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thomas-crane/pine/issues"
+  },
+  "homepage": "https://github.com/thomas-crane/pine#readme"
+}

@@ -1,0 +1,145 @@
+(* basic stuff *)
+letter       = [A-Za-z];
+number       = [0-9];
+semi         = ";";
+quotemark    = "'";
+lparen       = "(";
+rparen       = ")";
+lcurly       = "{";
+rcurly       = "}";
+rparen       = ")";
+lsquare      = "[";
+rsquare      = "]";
+pipe         = "|";
+underscore   = "_";
+dot          = ".";
+colon        = ":";
+double_colon = "::";
+comma        = ",";
+(* -- keywords *)
+self         = "self";
+has          = "has";
+is           = "is";
+class        = "type";
+fn           = "fn";
+const        = "const";
+if_literal   = "if";
+else_literal = "else";
+
+returns      = "->";
+empty        = ;
+assign       = "=";
+assignment   = assign, expression;
+program      = { expression | statement };
+
+(* literals *)
+id          = (letter | underscore), { (letter | digit | underscore) };
+num_literal = number, { number }, [ dot, number, { number } ];
+str_literal = quotemark, { [^quotemark] }, quotemark;
+type        = id
+            | tuple_type
+            | array_type
+            ;
+
+type_list   = type
+            | type, comma, type_list
+            ;
+
+tuple_type  = lparen, type_list, rparen;
+array_type  = lsquare, type, rsquare;
+trait       = id;
+
+(* statements *)
+statement       = block_statement
+                | class_def
+                | class_impl
+                | const_def
+                | fn_def
+                | trait_impl
+                | var_def
+                ;
+
+statement_list  = statement
+                | statement, statement_list
+                ;
+
+block_statement = rcurly, (empty | statement_list), lcurly;
+(* -- classes *)
+field_def       = pipe, var_def;
+field_list      = field_def
+                | field_def, pipe, field_list;
+class_def       = class, id, field_list, semi;
+class_impl      = class, id, has, rcurly, { fn_def }, lcurly;
+trait_impl      = class, id, is, trait, rcurly, { fn_def }, lcurly;
+(* -- functions *)
+return_type     = returns, type;
+param           = type id;
+param_list      = param,
+                | param comma param_list
+                ;
+
+params          = self
+                | param_list
+                | self, comma, param_list;
+
+fn_decl         = id, lparen, params, rparen, [ return_type ], block_statement;
+fn_def          = fn, fn_decl;
+var_def         = type, id, [ assignment ];
+const_def       = const, type, id, assignment;
+
+(* expressions*)
+expression      = sum
+                | if
+                | type_literal
+                ;
+
+if              = if_literal, expression, block_statement, [ else ];
+else            = else_literal, if
+                | else_literal, expression, block_statement
+                ;
+
+(* -- functions *)
+arg             = expression;
+arg_list        = arg
+                | arg, comma, arg_list
+                ;
+
+fn_call         = id lparen arg_list rparen;
+(* -- arithmetic *)
+sum           = sum, plus, term
+              | sum, minus, term
+              | term
+              ;
+
+term          = term, times, factor
+              | term, divide, factor
+              | factor
+              ;
+
+factor        = exponent, pow, factor
+              | exponent
+              ;
+
+exponent      = "-", exponent
+              | value
+              ;
+
+value         = num_literal
+              | id
+              | fn_call
+              | self
+              | str_literal
+              | member_access
+              | static_access
+              | lparen, expression rparen
+              ;
+
+field_literal = id, colon, expression;
+field_list    = field_literal, comma
+              | field_literal, comma, field_literal;
+
+type_literal  = id, lcurly, field_list, rcurly;
+
+member_access = id, colon, (id | fn_call);
+static_access = type, double_colon, (id | fn_call);
+

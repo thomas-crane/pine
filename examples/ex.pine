@@ -1,0 +1,9 @@
+type Token is
+  | num x
+  | num y
+  | str value = 30
+  ;
+
+type Token has {
+  fn test(self) {}
+}
