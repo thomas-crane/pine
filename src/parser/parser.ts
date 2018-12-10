@@ -1,4 +1,5 @@
 import { BinaryOp } from '../ast/expr/binary-op';
+import { Bool } from '../ast/expr/bool';
 import { Else } from '../ast/expr/else';
 import { FnCall } from '../ast/expr/fn-call';
 import { Id } from '../ast/expr/id';
@@ -61,13 +62,13 @@ export class Parser {
   program(): ProgramAST {
     const program = new ProgramAST();
     while (true) {
-      const expr = this.expression();
-      if (expr) {
-        program.lines.push(expr);
-      }
       const stmt = this.statement();
       if (stmt) {
         program.lines.push(stmt);
+      }
+      const expr = this.expression();
+      if (expr) {
+        program.lines.push(expr);
       }
       if (!expr && !stmt) {
         return program;
@@ -80,14 +81,14 @@ export class Parser {
       const peek = this.peek()[0];
       switch (peek) {
         case NodeType.LCurly: return this.typeLiteral();
+        case NodeType.Id: return undefined;
       }
       return this.sum();
     }
-    if (this.accept(NodeType.Num, NodeType.Str, NodeType.Self, NodeType.LParen)) {
+    if (this.accept(NodeType.Num, NodeType.Str, NodeType.Self, NodeType.LParen, NodeType.True, NodeType.False)) {
       return this.sum();
     }
     if (this.accept(NodeType.If)) {
-      // if ...
       return this.if();
     }
     // not an expression
@@ -352,9 +353,20 @@ export class Parser {
     }
     return new StaticAccess(id, val as (Id | FnCall));
   }
+
   self(): Self {
     this.consume(NodeType.Self);
     return new Self();
+  }
+
+  bool(): Bool {
+    if (this.accept(NodeType.True)) {
+      this.consume(NodeType.True);
+      return new Bool(true);
+    } else {
+      this.consume(NodeType.False);
+      return new Bool(false);
+    }
   }
   //#endregion
 
@@ -371,14 +383,36 @@ export class Parser {
   }
 
   term(): Expression {
-    let term = this.factor();
-    while (this.accept(NodeType.Mul, NodeType.Div)) {
+    let term = this.comparison();
+    while (this.accept(NodeType.Mul, NodeType.Div, NodeType.Mod)) {
       const op = this.current.type;
       this.consume(this.current.type);
-      const rhs = this.factor();
+      const rhs = this.comparison();
       term = new BinaryOp(term, op, rhs);
     }
     return term;
+  }
+
+  comparison(): Expression {
+    let comparison = this.equality();
+    while (this.accept(NodeType.LessThan, NodeType.LessOrEqual, NodeType.GreaterThan, NodeType.GreaterOrEqual)) {
+      const op = this.current.type;
+      this.consume(this.current.type);
+      const rhs = this.equality();
+      comparison = new BinaryOp(comparison, op, rhs);
+    }
+    return comparison;
+  }
+
+  equality(): Expression {
+    let equality = this.factor();
+    while (this.accept(NodeType.Equal, NodeType.NotEqual)) {
+      const op = this.current.type;
+      this.consume(this.current.type);
+      const rhs = this.factor();
+      equality = new BinaryOp(equality, op, rhs);
+    }
+    return equality;
   }
 
   factor(): Expression {
@@ -401,6 +435,9 @@ export class Parser {
   }
 
   value(): Expression {
+    if (this.accept(NodeType.True, NodeType.False)) {
+      return this.bool();
+    }
     if (this.accept(NodeType.LParen)) {
       this.consume(NodeType.LParen);
       const expr = this.expression();

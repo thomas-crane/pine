@@ -1,21 +1,27 @@
 (* basic stuff *)
-letter       = [A-Za-z];
-number       = [0-9];
-semi         = ";";
-quotemark    = "'";
-lparen       = "(";
-rparen       = ")";
-lcurly       = "{";
-rcurly       = "}";
-rparen       = ")";
-lsquare      = "[";
-rsquare      = "]";
-pipe         = "|";
-underscore   = "_";
-dot          = ".";
-colon        = ":";
-double_colon = "::";
-comma        = ",";
+letter             = [A-Za-z];
+number             = [0-9];
+semi               = ";";
+quotemark          = "'";
+lparen             = "(";
+rparen             = ")";
+lcurly             = "{";
+rcurly             = "}";
+rparen             = ")";
+lsquare            = "[";
+rsquare            = "]";
+pipe               = "|";
+underscore         = "_";
+dot                = ".";
+colon              = ":";
+less_than          = "<";
+greater_than       = ">";
+less_than_equal    = "<=";
+greater_than_equal = ">=";
+equal_to           = "==";
+not_equal_to       = "!=";
+double_colon       = "::";
+comma              = ",";
 (* -- keywords *)
 self         = "self";
 has          = "has";
@@ -25,6 +31,11 @@ fn           = "fn";
 const        = "const";
 if_literal   = "if";
 else_literal = "else";
+true         = "true";
+false        = "false";
+bool_literal = true
+             | false
+             ;
 
 returns      = "->";
 empty        = ;
@@ -111,9 +122,21 @@ sum           = sum, plus, term
               | term
               ;
 
-term          = term, times, factor
-              | term, divide, factor
-              | factor
+term          = term, times, comparison
+              | term, divide, comparison
+              | term, modulo, comparison
+              | comparison
+              ;
+
+comparison    = comparison, less_than, equality
+              | comparison, less_than_equal, equality
+              | comparison, greater_than, equality
+              | comparison, greater_than_equal, equality
+              | equality
+              ;
+
+equality      = equality, equal_to, factor
+              | equality, not_equal_to, factor
               ;
 
 factor        = exponent, pow, factor
@@ -129,6 +152,7 @@ value         = num_literal
               | fn_call
               | self
               | str_literal
+              | bool_literal
               | member_access
               | static_access
               | lparen, expression rparen
