@@ -7,7 +7,14 @@ import { Num } from '../../src/ast/expr/num';
 import { Str } from '../../src/ast/expr/str';
 import { UnaryOp } from '../../src/ast/expr/unary-op';
 import { Statement } from '../../src/ast/statement';
+import { BlockStatement } from '../../src/ast/stmt/block-statement';
 import { ClassDef } from '../../src/ast/stmt/class-def';
+import { ClassImpl } from '../../src/ast/stmt/class-impl';
+import { ConstDef } from '../../src/ast/stmt/const-def';
+import { FnDef } from '../../src/ast/stmt/fn-def';
+import { TraitImpl } from '../../src/ast/stmt/trait-impl';
+import { Type, TypeDef } from '../../src/ast/stmt/type';
+import { VarDef } from '../../src/ast/stmt/var-def';
 import { NodeType } from '../../src/models/node-type';
 import { Parser } from '../../src/parser/parser';
 
@@ -27,6 +34,17 @@ const EXPR_SAMPLE = makeNodes([
 ]);
 
 describe('Parser', () => {
+  describe('#consume()', () => {
+    it('should advance the current node if the type matches.', () => {
+      const parser = new Parser(makeNodes([NodeType.Id, NodeType.Assign]));
+      parser.consume(NodeType.Id);
+      expect(parser.current.type).to.equal(NodeType.Assign);
+    });
+    it('should throw an error if the types do not match.', () => {
+      const parser = new Parser(makeNodes([NodeType.Id, NodeType.Assign]));
+      expect(() => parser.consume(NodeType.Not)).to.throw();
+    });
+  });
   describe('#peek()', () => {
     it('should return the next n node types.', () => {
       const parser = new Parser(EXPR_SAMPLE);
@@ -82,6 +100,124 @@ describe('Parser', () => {
     it('should return undefined for expressions.', () => {
       const parser = new Parser(EXPR_SAMPLE);
       expect(parser.statement()).to.equal(undefined);
+    });
+  });
+  describe('#classDef()', () => {
+    it('should return a ClassDef for class definitions.', () => {
+      const parser = new Parser(STMT_SAMPLE);
+      const classDef = parser.classDef();
+      expect(classDef instanceof ClassDef).to.equal(true);
+    });
+  });
+  describe('#classImpl', () => {
+    it('should return a ClassImpl for class implementations.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.Type, NodeType.Id, NodeType.Has, NodeType.LCurly,
+        NodeType.RCurly,
+      ]));
+      const classImpl = parser.classImpl();
+      expect(classImpl instanceof ClassImpl).to.equal(true);
+    });
+  });
+  describe('#traitImpl()', () => {
+    it('should return a ClassImpl for class implementations.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.Type, NodeType.Id, NodeType.Is, NodeType.Id, NodeType.LCurly,
+        NodeType.RCurly,
+      ]));
+      const traitImpl = parser.traitImpl();
+      expect(traitImpl instanceof TraitImpl).to.equal(true);
+    });
+  });
+  describe('#fnDef()', () => {
+    it('should return an FnDef for function definitions.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.Fn, NodeType.Id, NodeType.LParen, NodeType.Id, NodeType.Id, NodeType.RParen, NodeType.LCurly,
+        NodeType.RCurly,
+      ]));
+      const fnDef = parser.fnDef();
+      expect(fnDef instanceof FnDef).to.equal(true);
+    });
+  });
+  describe('#type()', () => {
+    it('should return a Normal TypeDef for ids.', () => {
+      const parser = new Parser(makeNodes([NodeType.Id]));
+      const type = parser.type();
+      expect(type instanceof TypeDef).to.equal(true);
+      expect((type as TypeDef).type).to.equal(Type.Normal);
+    });
+    it('should return an Array TypeDef for array types.', () => {
+      const parser = new Parser(makeNodes([NodeType.LSquare, NodeType.Id, NodeType.RSquare]));
+      const type = parser.type();
+      expect(type instanceof TypeDef).to.equal(true);
+      expect((type as TypeDef).type).to.equal(Type.Array);
+    });
+    it('should return a Tuple TypeDef for tuple types.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.LParen, NodeType.Id, NodeType.Comma, NodeType.Id, NodeType.RParen,
+      ]));
+      const type = parser.type();
+      expect(type instanceof TypeDef).to.equal(true);
+      expect((type as TypeDef).type).to.equal(Type.Tuple);
+    });
+  });
+  describe('#varDef()', () => {
+    it('should return a VarDef for var defs.', () => {
+      const parser = new Parser(makeNodes([NodeType.Id, NodeType.Id]));
+      const varDef = parser.varDef();
+      expect(varDef instanceof VarDef).to.equal(true);
+    });
+    it('should recognize assignments.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.Id, NodeType.Id,
+        NodeType.Assign, NodeType.Num, NodeType.Add, NodeType.Num,
+      ]));
+      const varDef = parser.varDef();
+      expect(varDef instanceof VarDef).to.equal(true);
+      expect((varDef as VarDef).assignment).to.not.equal(undefined);
+    });
+  });
+  describe('#constDef()', () => {
+    it('should return a ConstDef for const defs.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.Const, NodeType.Id, NodeType.Id,
+        NodeType.Assign, NodeType.Num, NodeType.Add, NodeType.Num,
+      ]));
+      const constDef = parser.constDef();
+      expect(constDef instanceof ConstDef).to.equal(true);
+    });
+    it('should throw if there is no assignment.', () => {
+      const parser = new Parser(makeNodes([NodeType.Const, NodeType.Id, NodeType.Id]));
+      expect(() => parser.constDef()).to.throw();
+    });
+  });
+  describe('#blockStatement()', () => {
+    it('should recognize empty blocks.', () => {
+      const parser = new Parser(makeNodes([NodeType.LCurly, NodeType.RCurly]));
+      const blockStatement = parser.blockStatement();
+      expect(blockStatement instanceof BlockStatement).to.equal(true);
+      expect((blockStatement as BlockStatement).lines.length).to.equal(0);
+    });
+    it('should recognize blocks with one statement.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.LCurly,
+        NodeType.Num, NodeType.Add, NodeType.Num,
+        NodeType.RCurly,
+      ]));
+      const blockStatement = parser.blockStatement();
+      expect(blockStatement instanceof BlockStatement).to.equal(true);
+      expect((blockStatement as BlockStatement).lines.length).to.equal(1);
+    });
+    it('should recognize blocks with two statement.', () => {
+      const parser = new Parser(makeNodes([
+        NodeType.LCurly,
+        NodeType.Num, NodeType.Add, NodeType.Num, NodeType.Semi,
+        NodeType.Num, NodeType.Mul, NodeType.Num,
+        NodeType.RCurly,
+      ]));
+      const blockStatement = parser.blockStatement();
+      expect(blockStatement instanceof BlockStatement).to.equal(true);
+      expect((blockStatement as BlockStatement).lines.length).to.equal(2);
     });
   });
   describe('#sum()', () => {
