@@ -12,6 +12,7 @@ const OP_CHARS = [
   '<', // less than
   '>', // greater than
   '=', // assign
+  '!', // not
 ];
 
 const SINGLE_CHARS = [
@@ -209,7 +210,9 @@ export class Lexer {
       case 'fn': return NodeType.Fn;
       case 'has': return NodeType.Has;
       case 'self': return NodeType.Self;
+      case 'true': return NodeType.True;
       case 'type': return NodeType.Type;
+      case 'false': return NodeType.False;
       case 'const': return NodeType.Const;
       default: return NodeType.Id;
     }
@@ -225,6 +228,7 @@ export class Lexer {
       case '<': return NodeType.LessThan;
       case '>': return NodeType.GreaterThan;
       case '=': return NodeType.Assign;
+      case '!': return NodeType.Not;
       case '->': return NodeType.Return;
       case '+=': return NodeType.AddAssign;
       case '-=': return NodeType.SubAssign;
@@ -234,6 +238,7 @@ export class Lexer {
       case '<=': return NodeType.LessOrEqual;
       case '>=': return NodeType.GreaterOrEqual;
       case '==': return NodeType.Equal;
+      case '!=': return NodeType.NotEqual;
       default: return NodeType.Unknown;
     }
   }

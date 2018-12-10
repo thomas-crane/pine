@@ -3,14 +3,17 @@ export enum NodeType {
   Id = 'Id',
   Str = 'String',
   Num = 'Num',
-  Quotemark = 'Quotemark',
+  True = 'True',
+  False = 'False',
 
   // single tokens
   Semi = 'Semi',
   Comma = 'Comma',
   Pipe = 'Pipe',
   Colon = 'Colon',
+  Not = 'Not',
   DoubleColon = 'DoubleColon',
+  Quotemark = 'Quotemark',
 
   // flow control
   If = 'If',
@@ -49,6 +52,7 @@ export enum NodeType {
   LessThan = 'LessThan',
   LessOrEqual = 'LessOrEqual',
   Equal = 'Equal',
+  NotEqual = 'NotEqual',
 
   // assignment
   Assign = 'Assign',
