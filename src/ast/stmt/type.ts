@@ -16,6 +16,5 @@ export enum Type {
   Normal = 'Normal',
   Array = 'Array',
   Tuple = 'Tuple',
-  Self = 'Self',
   Null = 'Null',
 }

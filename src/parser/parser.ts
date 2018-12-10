@@ -152,8 +152,9 @@ export class Parser {
   traitImpl(): TraitImpl {
     this.consume(NodeType.Type);
     const id = this.id();
-    const impl = new TraitImpl(id, []);
     this.consume(NodeType.Is);
+    const traitId = this.id();
+    const impl = new TraitImpl(id, traitId, []);
     this.consume(NodeType.LCurly);
     while (!this.accept(NodeType.RCurly)) {
       impl.fns.push(this.fnDef());
@@ -235,6 +236,9 @@ export class Parser {
     const id = this.id();
     this.consume(NodeType.Assign);
     const assignment = this.expression();
+    if (!assignment) {
+      throw new Error('ConstDef without assignment.');
+    }
     return new ConstDef(type, id, assignment);
   }
 
@@ -242,13 +246,19 @@ export class Parser {
     this.consume(NodeType.LCurly);
     const block = new BlockStatement([]);
     while (true) {
+      const stmt = this.statement();
+      if (stmt) {
+        block.lines.push(stmt);
+      }
+      if (this.accept(NodeType.Semi)) {
+        this.consume(NodeType.Semi);
+      }
       const expr = this.expression();
       if (expr) {
         block.lines.push(expr);
       }
-      const stmt = this.statement();
-      if (stmt) {
-        block.lines.push(stmt);
+      if (this.accept(NodeType.Semi)) {
+        this.consume(NodeType.Semi);
       }
       if (!expr && !stmt) {
         this.consume(NodeType.RCurly);
