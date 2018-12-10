@@ -2,8 +2,12 @@ import { expect } from 'chai';
 import 'mocha';
 import { makeNodes } from '../../lib/make-nodes';
 import { BinaryOp } from '../../src/ast/expr/binary-op';
-import { Expression } from '../../src/ast/expression';
+import { Id } from '../../src/ast/expr/id';
+import { Num } from '../../src/ast/expr/num';
+import { Str } from '../../src/ast/expr/str';
+import { UnaryOp } from '../../src/ast/expr/unary-op';
 import { Statement } from '../../src/ast/statement';
+import { ClassDef } from '../../src/ast/stmt/class-def';
 import { NodeType } from '../../src/models/node-type';
 import { Parser } from '../../src/parser/parser';
 
@@ -51,19 +55,19 @@ describe('Parser', () => {
       const parser = new Parser(EXPR_SAMPLE);
       const program = parser.program();
       expect(program.lines.length).to.equal(1);
-      expect(program.lines[0]).instanceof(Expression);
+      expect(program.lines[0] instanceof BinaryOp).to.equal(true);
     });
     it('should parse statements.', () => {
       const parser = new Parser(STMT_SAMPLE);
       const program = parser.program();
       expect(program.lines.length).to.equal(1);
-      expect(program.lines[0]).instanceof(Statement);
+      expect(program.lines[0] instanceof ClassDef).to.equal(true);
     });
   });
   describe('#expression()', () => {
     it('should return an Expression for expressions.', () => {
       const parser = new Parser(EXPR_SAMPLE);
-      expect(parser.expression()).instanceof(Expression);
+      expect(parser.expression() instanceof BinaryOp).to.equal(true);
     });
     it('should return undefined for statements.', () => {
       const parser = new Parser(STMT_SAMPLE);
@@ -84,16 +88,12 @@ describe('Parser', () => {
     it('should return a BinaryOp for addition.', () => {
       const parser = new Parser(makeNodes([NodeType.Num, NodeType.Add, NodeType.Num]));
       const node = parser.sum();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
+      expect(node instanceof BinaryOp).to.equal(true);
     });
     it('should return a BinaryOp for subtraction.', () => {
       const parser = new Parser(makeNodes([NodeType.Num, NodeType.Sub, NodeType.Num]));
       const node = parser.sum();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
+      expect(node instanceof BinaryOp).to.equal(true);
     });
     it('should be left associative.', () => {
       const parser = new Parser(makeNodes([
@@ -101,34 +101,23 @@ describe('Parser', () => {
         NodeType.Sub, NodeType.Num,
       ]));
       const node = parser.sum();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
-
+      expect(node instanceof BinaryOp).to.equal(true);
       // check rhs
-      expect((node as BinaryOp).lhs).instanceof(Expression);
-      expect((node as BinaryOp).lhs).has.ownProperty('lhs');
-      expect((node as BinaryOp).lhs).has.ownProperty('rhs');
-
+      expect((node as BinaryOp).rhs instanceof BinaryOp).to.equal(false);
       // check lhs
-      expect((node as BinaryOp).rhs).does.not.have.ownProperty('lhs');
-      expect((node as BinaryOp).rhs).does.not.have.ownProperty('rhs');
+      expect((node as BinaryOp).lhs instanceof BinaryOp).to.equal(true);
     });
   });
   describe('#term()', () => {
     it('should return a BinaryOp for multiplication.', () => {
       const parser = new Parser(makeNodes([NodeType.Num, NodeType.Mul, NodeType.Num]));
       const node = parser.term();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
+      expect(node instanceof BinaryOp).to.equal(true);
     });
     it('should return a BinaryOp for division.', () => {
       const parser = new Parser(makeNodes([NodeType.Num, NodeType.Div, NodeType.Num]));
       const node = parser.term();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
+      expect(node instanceof BinaryOp).to.equal(true);
     });
     it('should be left associative.', () => {
       const parser = new Parser(makeNodes([
@@ -136,27 +125,18 @@ describe('Parser', () => {
         NodeType.Div, NodeType.Num,
       ]));
       const node = parser.term();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
-
+      expect(node instanceof BinaryOp).to.equal(true);
       // check rhs
-      expect((node as BinaryOp).lhs).instanceof(Expression);
-      expect((node as BinaryOp).lhs).has.ownProperty('lhs');
-      expect((node as BinaryOp).lhs).has.ownProperty('rhs');
-
+      expect((node as BinaryOp).lhs instanceof BinaryOp).to.equal(true);
       // check lhs
-      expect((node as BinaryOp).rhs).does.not.have.ownProperty('lhs');
-      expect((node as BinaryOp).rhs).does.not.have.ownProperty('rhs');
+      expect((node as BinaryOp).rhs instanceof BinaryOp).to.equal(false);
     });
   });
   describe('#factor()', () => {
     it('should return a BinaryOp for exponents.', () => {
       const parser = new Parser(makeNodes([NodeType.Num, NodeType.Pow, NodeType.Num]));
       const node = parser.factor();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
+      expect(node instanceof BinaryOp).to.equal(true);
     });
     it('should be right associative.', () => {
       const parser = new Parser(makeNodes([
@@ -164,44 +144,35 @@ describe('Parser', () => {
         NodeType.Pow, NodeType.Num,
       ]));
       const node = parser.factor();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('lhs');
-      expect(node).has.ownProperty('rhs');
-
+      expect(node instanceof BinaryOp).to.equal(true);
       // check rhs
-      expect((node as BinaryOp).rhs).instanceof(Expression);
-      expect((node as BinaryOp).rhs).has.ownProperty('lhs');
-      expect((node as BinaryOp).rhs).has.ownProperty('rhs');
-
+      expect((node as BinaryOp).rhs instanceof BinaryOp).to.equal(true);
       // check lhs
-      expect((node as BinaryOp).lhs).does.not.have.ownProperty('lhs');
-      expect((node as BinaryOp).lhs).does.not.have.ownProperty('rhs');
+      expect((node as BinaryOp).lhs instanceof BinaryOp).to.equal(false);
     });
   });
   describe('#exponent()', () => {
     it('should return a UnaryOp for negations.', () => {
       const parser = new Parser(makeNodes([NodeType.Sub, NodeType.Num]));
       const node = parser.exponent();
-      expect(node).instanceof(Expression);
-      expect(node).has.ownProperty('operator');
-      expect(node).has.ownProperty('operand');
+      expect(node instanceof UnaryOp).to.equal(true);
     });
   });
   describe('#value()', () => {
-    it('should return an expression for ids.', () => {
+    it('should return an Id for ids.', () => {
       const parser = new Parser(makeNodes([NodeType.Id]));
       const node = parser.value();
-      expect(node).instanceof(Expression);
+      expect(node instanceof Id).to.equal(true);
     });
-    it('should return an expression for a string.', () => {
+    it('should return a Str for a string.', () => {
       const parser = new Parser(makeNodes([NodeType.Str]));
       const node = parser.value();
-      expect(node).instanceof(Expression);
+      expect(node instanceof Str).to.equal(true);
     });
-    it('should return an expression for a string.', () => {
+    it('should return a Num for a number.', () => {
       const parser = new Parser(makeNodes([NodeType.Num]));
       const node = parser.value();
-      expect(node).instanceof(Expression);
+      expect(node instanceof Num).to.equal(true);
     });
   });
 });
