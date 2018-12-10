@@ -6,6 +6,7 @@ import * as chars from '../util/chars';
 const OP_CHARS = [
   '+', // add
   '-', // sub
+  '*', // mul
   '/', // div
   '%', // mod
   '<', // less than
