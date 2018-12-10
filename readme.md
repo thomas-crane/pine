@@ -1,5 +1,8 @@
 # Pine
 
+[![Build Status](https://travis-ci.org/thomas-crane/pine.svg?branch=master)](https://travis-ci.org/thomas-crane/pine)
+
+
 Pine is a general purpose language which is heavily inspired by Rust.
 Pine compiles to Node.js style JavaScript.
 
