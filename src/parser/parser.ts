@@ -288,7 +288,7 @@ export class Parser {
     this.consume(NodeType.If);
     const condition = this.expression();
     const body = this.blockStatement();
-    let elsePart: Else;
+    let elsePart: Else | If;
     if (this.accept(NodeType.Else)) {
       elsePart = this.elsePart();
     }

@@ -10,3 +10,11 @@ bool isEven = if x % 2 == 0 {
 } else {
   false
 }
+
+str test = if x > 15 {
+  'x > 15'
+} else if x < 10 {
+  'x < 10'
+} else {
+  '15 > x > 15'
+}
