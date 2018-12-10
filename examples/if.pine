@@ -1,0 +1,12 @@
+num x = if 3 < 2 {
+  10
+} else {
+  5
+}
+
+
+bool isEven = if x % 2 == 0 {
+  true
+} else {
+  false
+}
