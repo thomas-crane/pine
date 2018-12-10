@@ -1,4 +1,4 @@
-type Token is
+type Token
   | num x
   | num y
   | str value = 30
