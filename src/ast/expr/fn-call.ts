@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Expression } from '../expression';
 import { Id } from './id';
 
@@ -7,6 +8,6 @@ export class FnCall extends Expression {
   }
 
   toString() {
-    return `FnCall: ${this.id.toString()}(${this.args.map((a) => a.toString()).join(', ')})`;
+    return util.inspect(this, false, 10, true);
   }
 }

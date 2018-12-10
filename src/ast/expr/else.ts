@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Expression } from '../expression';
 import { BlockStatement } from '../stmt/block-statement';
 
@@ -7,6 +8,6 @@ export class Else extends Expression {
   }
 
   toString() {
-    return `Else: ${this.body.toString()}`;
+    return util.inspect(this, false, 10, true);
   }
 }

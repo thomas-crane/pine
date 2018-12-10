@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Expression } from '../expression';
 import { Statement } from '../statement';
 
@@ -7,6 +8,6 @@ export class BlockStatement extends Statement {
   }
 
   toString() {
-    return `Block:\n${this.lines.map((l) => `  ${l.toString()}\n`)}`;
+    return util.inspect(this, false, 10, true);
   }
 }

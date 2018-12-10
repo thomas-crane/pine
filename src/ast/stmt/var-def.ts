@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Id } from '../expr/id';
 import { Expression } from '../expression';
 import { Statement } from '../statement';
@@ -9,6 +10,6 @@ export class VarDef extends Statement {
   }
 
   toString() {
-    return `Var ${this.id.toString()} type: "${this.type.toString()}"`;
+    return util.inspect(this, false, 10, true);
   }
 }

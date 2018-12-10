@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Expression } from './expression';
 import { Statement } from './statement';
 
@@ -8,9 +9,6 @@ export class ProgramAST {
   }
 
   toString(): string {
-    return [
-      'Program',
-      ...this.lines.map((line) => line.toString()),
-    ].join('\n');
+    return util.inspect(this, false, 10, true);
   }
 }

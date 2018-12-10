@@ -6,6 +6,6 @@ export class Self extends Expression {
     super();
   }
   toString(): string {
-    return `Self`;
+    return `self`;
   }
 }

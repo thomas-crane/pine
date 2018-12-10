@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Id } from '../expr/id';
 import { Statement } from '../statement';
 
@@ -7,21 +8,14 @@ export class TypeDef extends Statement {
   }
 
   toString() {
-    const types = this.types.map((t) => t.toString()).join(', ');
-    switch (this.type) {
-      case Type.Normal: return `${types}`;
-      case Type.Tuple: return `(${types})`;
-      case Type.Array: return `[${types}]`;
-      case Type.Self: return `self`;
-      case Type.Null: return `null`;
-    }
+    return util.inspect(this, false, 10, true);
   }
 }
 
 export enum Type {
-  Normal,
-  Array,
-  Tuple,
-  Self,
-  Null,
+  Normal = 'Normal',
+  Array = 'Array',
+  Tuple = 'Tuple',
+  Self = 'Self',
+  Null = 'Null',
 }

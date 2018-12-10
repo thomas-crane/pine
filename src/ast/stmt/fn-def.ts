@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Id } from '../expr/id';
 import { Statement } from '../statement';
 import { BlockStatement } from './block-statement';
@@ -16,7 +17,6 @@ export class FnDef extends Statement {
   }
 
   toString() {
-    const args = this.args.map((a) => a.toString()).join(', ');
-    return `Fn ${this.isStatic ? 'static' : ''} ${this.id.toString()}(${args})\nbody => ${this.body.toString()}`;
+    return util.inspect(this, false, 10, true);
   }
 }

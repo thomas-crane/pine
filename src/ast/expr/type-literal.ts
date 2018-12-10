@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Expression } from '../expression';
 import { Id } from './id';
 
@@ -7,6 +8,6 @@ export class TypeLiteral extends Expression {
   }
 
   toString() {
-    return `Type literal: ${this.id.toString()} args: ${this.args}`;
+    return util.inspect(this, false, 10, true);
   }
 }

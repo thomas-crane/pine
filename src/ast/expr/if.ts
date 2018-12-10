@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Expression } from '../expression';
 import { BlockStatement } from '../stmt/block-statement';
 import { Else } from './else';
@@ -8,7 +9,6 @@ export class If extends Expression {
   }
 
   toString() {
-    const elsePart: string = this.elsePart ? this.elsePart.toString() : '';
-    return `If ${this.condition.toString()}\nthen: ${this.body.toString()} ${elsePart}`;
+    return util.inspect(this, false, 10, true);
   }
 }

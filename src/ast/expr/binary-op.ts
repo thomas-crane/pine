@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { NodeType } from '../../models/node-type';
 import { Expression } from '../expression';
 
@@ -7,6 +8,6 @@ export class BinaryOp extends Expression {
   }
 
   toString() {
-    return `BinOp\nlhs: ${this.lhs.toString()}\nop: ${this.op}\nrhs: ${this.rhs.toString()}`;
+    return util.inspect(this, false, 10, true);
   }
 }

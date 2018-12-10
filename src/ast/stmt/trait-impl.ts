@@ -1,3 +1,4 @@
+import * as util from 'util';
 import { Id } from '../expr/id';
 import { Statement } from '../statement';
 import { FnDef } from './fn-def';
@@ -8,6 +9,6 @@ export class TraitImpl extends Statement {
   }
 
   toString() {
-    return `TraitImpl: ${this.id.toString()}\nFns: ${this.fns.map((fn) => fn.toString()).join('\n')}`;
+    return util.inspect(this, false, 10, true);
   }
 }
