@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "description": "A Pine compiler written in TypeScript.",
   "main": "dist/index.js",
+  "bin": {
+    "pine": "dist/index.js"
+  },
+  "preferGlobal": true,
   "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.1.7",
