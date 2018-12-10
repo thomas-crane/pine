@@ -8,7 +8,7 @@ export class TypeDef extends Statement {
   }
 
   toString() {
-    return util.inspect(this, false, 10, true);
+    return util.inspect(this, false, Infinity, true);
   }
 }
 

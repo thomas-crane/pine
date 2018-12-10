@@ -10,6 +10,6 @@ export class MemberAccess extends Expression {
   }
 
   toString() {
-    return util.inspect(this, false, 10, true);
+    return util.inspect(this, false, Infinity, true);
   }
 }
