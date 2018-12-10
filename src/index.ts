@@ -1,13 +1,34 @@
-// import { makeValueNodes } from '../lib/make-nodes';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Lexer } from './lexer/lexer';
-import { Parser } from './parser/parser';
+#!/usr/bin/env node
+import { print } from './bin/print';
 
-const filename = path.join(process.cwd(), process.argv.slice(2)[0]);
-const contents = fs.readFileSync(filename, { encoding: 'utf8' });
-const nodes = new Lexer(contents).allTokens();
+const usage = [
+  'Pine compiler',
+  '',
+  '  Usage:',
+  '',
+  '  print <filename>',
+  '    - prints the AST of a Pine file.',
+  '    - Usage: `pine print main.pine`',
+  '',
+  '  compile <filename>',
+  '    - compiles the Pine file.',
+  '    - Usage: `pine compile main.pine`',
+].join('\n');
 
-const program = new Parser(nodes).program();
-
-console.log(program.toString());
+// tslint:disable:no-console
+const cmd = process.argv.slice(2)[0];
+switch (cmd) {
+  case 'print':
+    const file = process.argv.slice(2)[1];
+    if (!file) {
+      console.log('Please include a filename, e.g. "pine compile test.pine"');
+      process.exit(0);
+    }
+    const program = print(file);
+    console.log(program.toString());
+    break;
+  default:
+    console.log(usage);
+    process.exit(0);
+    break;
+}
