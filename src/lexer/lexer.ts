@@ -94,6 +94,15 @@ export class Lexer {
       return new Node(this.pos.pos(), NodeType.EOF);
     }
 
+    // comments
+    if (this.chr === '#') {
+      while (!chars.isNewLine(this.chr)) {
+        this.advance();
+      }
+      this.advance();
+      return this.nextNode();
+    }
+
     // numbers
     if (chars.isNum(this.chr)) {
       const pos = this.pos.pos();
@@ -123,6 +132,7 @@ export class Lexer {
         }
         this.advance();
       }
+      this.advance();
       let type = NodeType.Str;
       if (hasError) {
         type = NodeType.Error;

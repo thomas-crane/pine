@@ -57,6 +57,11 @@ describe('Lexer', () => {
       expect(node.type).to.equal(NodeType.Str);
       expect(node.value).to.equal('test\\tstring');
     });
+    it('should skip comments.', () => {
+      const lexer = new Lexer('# this is a comment\n10');
+      const node = lexer.nextNode();
+      expect(node.type).to.equal(NodeType.Num);
+    });
   });
   describe('#next()', () => {
     it('should return the correct number of nodes', () => {

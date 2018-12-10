@@ -3,6 +3,10 @@
  */
 export const isSpace = match(/[\s\n\r]/);
 /**
+ * Checks whether the character is a new line.
+ */
+export const isNewLine = match(/\n/);
+/**
  * Check whether the character is a number.
  */
 export const isNum = match(/[0-9]/);
