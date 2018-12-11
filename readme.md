@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/thomas-crane/pine.svg?branch=master)](https://travis-ci.org/thomas-crane/pine)
 
-
-Pine is a general purpose language which is heavily inspired by Rust.
+Pine is a general purpose, type checked language which is heavily inspired by Rust.
 Pine compiles to Node.js style JavaScript.
 
 ## Contents
@@ -150,4 +149,4 @@ There is an additional npm command which can be run to ensure your code follows 
 npm run lint
 ```
 
-This command run tslint. You should make sure this passes, as pull requests that do not pass this command will be rejected.
+This command runs tslint. You should make sure this passes, as pull requests that do not pass this command will be rejected.
