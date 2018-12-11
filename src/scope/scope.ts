@@ -1,9 +1,10 @@
 import { Id } from '../ast/expr/id';
+import { ConstDef } from '../ast/stmt/const-def';
 import { FnDef } from '../ast/stmt/fn-def';
 import { VarDef } from '../ast/stmt/var-def';
 
 export class Scope {
-  varDefs: Map<string, VarDef>;
+  varDefs: Map<string, VarDef | ConstDef>;
   fnDefs: Map<string, FnDef>;
   constructor(public name: string, public parent?: Scope) {
     this.varDefs = new Map();
@@ -14,7 +15,7 @@ export class Scope {
    * Stores a var in this scope.
    * @param varDef The var to store.
    */
-  setVar(varDef: VarDef) {
+  setVar(varDef: VarDef | ConstDef) {
     this.varDefs.set(varDef.id.id, varDef);
   }
 
@@ -56,6 +57,24 @@ export class Scope {
     } else {
       return this.parent.hasFn(item);
     }
+  }
+
+  /**
+   * Checks whether or not a var with
+   * the given id exists in this scope.
+   * @param item The id to check.
+   */
+  hasImmediateVar(item: Id): boolean {
+    return this.varDefs.has(item.id);
+  }
+
+  /**
+   * Checks whether or not a fn with
+   * the given id exists in this scope.
+   * @param item The id to check.
+   */
+  hasImmediateFn(item: Id): boolean {
+    return this.fnDefs.has(item.id);
   }
 
   /**
