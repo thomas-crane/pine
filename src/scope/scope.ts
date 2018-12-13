@@ -2,13 +2,14 @@ import { Id } from '../ast/expr/id';
 import { ConstDef } from '../ast/stmt/const-def';
 import { FnDef } from '../ast/stmt/fn-def';
 import { VarDef } from '../ast/stmt/var-def';
+import { ScopeLevel } from './scope-level';
 
 export class Scope {
-  varDefs: Map<string, VarDef | ConstDef>;
-  fnDefs: Map<string, FnDef>;
-  constructor(public name: string, public parent?: Scope) {
-    this.varDefs = new Map();
-    this.fnDefs = new Map();
+  levels: ScopeLevel[];
+  private levelPtr: number;
+  constructor(public name: string) {
+    this.levels = [new ScopeLevel(name)];
+    this.levelPtr = 0;
   }
 
   /**
@@ -16,7 +17,7 @@ export class Scope {
    * @param varDef The var to store.
    */
   setVar(varDef: VarDef | ConstDef) {
-    this.varDefs.set(varDef.id.id, varDef);
+    this.levels[this.levelPtr].setVar(varDef);
   }
 
   /**
@@ -24,7 +25,7 @@ export class Scope {
    * @param fnDef The fn to store.
    */
   setFn(fnDef: FnDef) {
-    this.fnDefs.set(fnDef.id.id, fnDef);
+    this.levels[this.levelPtr].setFn(fnDef);
   }
 
   /**
@@ -33,14 +34,12 @@ export class Scope {
    * @param item The id to check.
    */
   hasVar(item: Id): boolean {
-    if (this.varDefs.has(item.id)) {
-      return true;
+    for (let i = this.levelPtr; i >= 0; i--) {
+      if (this.levels[i].hasVar(item)) {
+        return true;
+      }
     }
-    if (!this.parent) {
-      return false;
-    } else {
-      return this.parent.hasVar(item);
-    }
+    return false;
   }
 
   /**
@@ -49,40 +48,39 @@ export class Scope {
    * @param item The id to check.
    */
   hasFn(item: Id): boolean {
-    if (this.fnDefs.has(item.id)) {
-      return true;
+    for (let i = this.levelPtr; i >= 0; i--) {
+      if (this.levels[i].hasFn(item)) {
+        return true;
+      }
     }
-    if (!this.parent) {
-      return false;
-    } else {
-      return this.parent.hasFn(item);
-    }
+    return false;
   }
 
   /**
    * Checks whether or not a var with
-   * the given id exists in this scope.
+   * the given id exists in the top scope level.
    * @param item The id to check.
    */
   hasImmediateVar(item: Id): boolean {
-    return this.varDefs.has(item.id);
+    return this.levels[this.levelPtr].hasVar(item);
   }
 
   /**
    * Checks whether or not a fn with
-   * the given id exists in this scope.
+   * the given id exists in the top scope level.
    * @param item The id to check.
    */
   hasImmediateFn(item: Id): boolean {
-    return this.fnDefs.has(item.id);
+    return this.levels[this.levelPtr].hasFn(item);
   }
 
   /**
-   * Creates a new child which has
-   * this scope as its parent.
-   * @param name The name for the new child.
+   * Creates a new scope level and returns it.
+   * @param name The name for the new level.
    */
-  child(name: string): Scope {
-    return new Scope(name, this);
+  child(name: string): ScopeLevel {
+    this.levelPtr++;
+    this.levels[this.levelPtr] = new ScopeLevel(name);
+    return this.levels[this.levelPtr];
   }
 }
