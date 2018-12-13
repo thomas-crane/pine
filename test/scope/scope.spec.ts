@@ -1,22 +1,23 @@
 import { expect } from 'chai';
 import 'mocha';
 import { Id } from '../../src/ast/expr/id';
+import { ArrayType } from '../../src/ast/stmt/array-type';
 import { FnDef } from '../../src/ast/stmt/fn-def';
-import { Type, TypeDef } from '../../src/ast/stmt/type';
+import { Type } from '../../src/ast/stmt/type';
 import { VarDef } from '../../src/ast/stmt/var-def';
 import { Scope } from '../../src/scope/scope';
 
 describe('Scope', () => {
   const var1 = new VarDef(
-    new TypeDef([new Id('num')], Type.Normal),
+    new Type(new Id('num')),
     new Id('someVar'),
   );
   const var2 = new VarDef(
-    new TypeDef([new Id('str')], Type.Normal),
+    new Type(new Id('str')),
     new Id('anotherVar'),
   );
   const var3 = new VarDef(
-    new TypeDef([new Id('num')], Type.Array),
+    new ArrayType(new Type(new Id('num'))),
     new Id('myArray'),
   );
   const fn1 = new FnDef(
@@ -38,7 +39,7 @@ describe('Scope', () => {
     false,
     [],
     undefined,
-    new TypeDef([], Type.Null),
+    undefined,
   );
   describe('#setVar()', () => {
     it('should add an item to the scope.', () => {

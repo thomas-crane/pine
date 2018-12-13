@@ -7,13 +7,14 @@ import { Num } from '../../src/ast/expr/num';
 import { Str } from '../../src/ast/expr/str';
 import { UnaryOp } from '../../src/ast/expr/unary-op';
 import { Statement } from '../../src/ast/statement';
+import { ArrayType } from '../../src/ast/stmt/array-type';
 import { BlockStatement } from '../../src/ast/stmt/block-statement';
 import { ClassDef } from '../../src/ast/stmt/class-def';
 import { ClassImpl } from '../../src/ast/stmt/class-impl';
 import { ConstDef } from '../../src/ast/stmt/const-def';
 import { FnDef } from '../../src/ast/stmt/fn-def';
 import { TraitImpl } from '../../src/ast/stmt/trait-impl';
-import { Type, TypeDef } from '../../src/ast/stmt/type';
+import { Type } from '../../src/ast/stmt/type';
 import { VarDef } from '../../src/ast/stmt/var-def';
 import { NodeType } from '../../src/models/node-type';
 import { Parser } from '../../src/parser/parser';
@@ -140,25 +141,15 @@ describe('Parser', () => {
     });
   });
   describe('#type()', () => {
-    it('should return a Normal TypeDef for ids.', () => {
+    it('should return a Type for ids.', () => {
       const parser = new Parser(makeNodes([NodeType.Id]));
       const type = parser.type();
-      expect(type instanceof TypeDef).to.equal(true);
-      expect((type as TypeDef).type).to.equal(Type.Normal);
+      expect(type instanceof Type).to.equal(true);
     });
-    it('should return an Array TypeDef for array types.', () => {
+    it('should return an ArrayType for array types.', () => {
       const parser = new Parser(makeNodes([NodeType.LSquare, NodeType.Id, NodeType.RSquare]));
       const type = parser.type();
-      expect(type instanceof TypeDef).to.equal(true);
-      expect((type as TypeDef).type).to.equal(Type.Array);
-    });
-    it('should return a Tuple TypeDef for tuple types.', () => {
-      const parser = new Parser(makeNodes([
-        NodeType.LParen, NodeType.Id, NodeType.Comma, NodeType.Id, NodeType.RParen,
-      ]));
-      const type = parser.type();
-      expect(type instanceof TypeDef).to.equal(true);
-      expect((type as TypeDef).type).to.equal(Type.Tuple);
+      expect(type instanceof ArrayType).to.equal(true);
     });
   });
   describe('#varDef()', () => {
