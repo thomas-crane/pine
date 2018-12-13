@@ -21,6 +21,7 @@ import { ClassDef } from '../ast/stmt/class-def';
 import { ClassImpl } from '../ast/stmt/class-impl';
 import { ConstDef } from '../ast/stmt/const-def';
 import { FnDef } from '../ast/stmt/fn-def';
+import { LetType } from '../ast/stmt/let-type';
 import { TraitImpl } from '../ast/stmt/trait-impl';
 import { Type } from '../ast/stmt/type';
 import { VarDef } from '../ast/stmt/var-def';
@@ -199,6 +200,10 @@ export class Parser {
   }
 
   type(): Type {
+    if (this.accept(NodeType.Let)) {
+      this.consume(NodeType.Let);
+      return new LetType();
+    }
     if (this.accept(NodeType.Id)) {
       const id = this.id();
       return new Type(id);

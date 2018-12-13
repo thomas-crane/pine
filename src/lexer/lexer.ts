@@ -219,6 +219,7 @@ export class Lexer {
       case 'is': return NodeType.Is;
       case 'fn': return NodeType.Fn;
       case 'has': return NodeType.Has;
+      case 'let': return NodeType.Let;
       case 'self': return NodeType.Self;
       case 'true': return NodeType.True;
       case 'null': return NodeType.Null;

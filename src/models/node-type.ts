@@ -27,6 +27,7 @@ export enum NodeType {
   Fn = 'Fn',
 
   // var decls
+  Let = 'let',
   Const = 'Const',
 
   // custom types
