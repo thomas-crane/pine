@@ -5,6 +5,7 @@ import { FnCall } from '../ast/expr/fn-call';
 import { Id } from '../ast/expr/id';
 import { If } from '../ast/expr/if';
 import { MemberAccess } from '../ast/expr/member-access';
+import { Null } from '../ast/expr/null';
 import { Num } from '../ast/expr/num';
 import { Self } from '../ast/expr/self';
 import { StaticAccess } from '../ast/expr/static-access';
@@ -14,13 +15,14 @@ import { UnaryOp } from '../ast/expr/unary-op';
 import { Expression } from '../ast/expression';
 import { ProgramAST } from '../ast/program-ast';
 import { Statement } from '../ast/statement';
+import { ArrayType } from '../ast/stmt/array-type';
 import { BlockStatement } from '../ast/stmt/block-statement';
 import { ClassDef } from '../ast/stmt/class-def';
 import { ClassImpl } from '../ast/stmt/class-impl';
 import { ConstDef } from '../ast/stmt/const-def';
 import { FnDef } from '../ast/stmt/fn-def';
 import { TraitImpl } from '../ast/stmt/trait-impl';
-import { Type, TypeDef } from '../ast/stmt/type';
+import { Type } from '../ast/stmt/type';
 import { VarDef } from '../ast/stmt/var-def';
 import { Node } from '../models/node';
 import { NodeType } from '../models/node-type';
@@ -77,6 +79,10 @@ export class Parser {
   }
 
   expression(): Expression {
+    if (this.accept(NodeType.Null)) {
+      this.consume(NodeType.Null);
+      return new Null();
+    }
     if (this.accept(NodeType.Id)) {
       const peek = this.peek()[0];
       switch (peek) {
@@ -183,7 +189,7 @@ export class Parser {
       }
     }
     this.consume(NodeType.RParen);
-    let returnType: TypeDef = new TypeDef([], Type.Null);
+    let returnType: Type;
     if (this.accept(NodeType.Return)) {
       this.consume(NodeType.Return);
       returnType = this.type();
@@ -192,27 +198,16 @@ export class Parser {
     return new FnDef(id, isStatic, args, body, returnType);
   }
 
-  type(): TypeDef {
+  type(): Type {
     if (this.accept(NodeType.Id)) {
       const id = this.id();
-      return new TypeDef([id]);
+      return new Type(id);
     }
     if (this.accept(NodeType.LSquare)) {
       this.consume(NodeType.LSquare);
       const type = this.type();
-      const typeDef = new TypeDef(type.types, Type.Array);
+      const typeDef = new ArrayType(type);
       this.consume(NodeType.RSquare);
-      return typeDef;
-    }
-    if (this.accept(NodeType.LParen)) {
-      this.consume(NodeType.LParen);
-      const typeDef = new TypeDef([], Type.Tuple);
-      typeDef.types.push(this.id());
-      while (this.accept(NodeType.Comma)) {
-        this.consume(NodeType.Comma);
-        typeDef.types.push(this.id());
-      }
-      this.consume(NodeType.RParen);
       return typeDef;
     }
     this.printLastTokens();
@@ -236,9 +231,8 @@ export class Parser {
     const id = this.id();
     this.consume(NodeType.Assign);
     const assignment = this.expression();
-    if (!assignment) {
-      throw new Error('ConstDef without assignment.');
-    }
+    // assignment may be undefined, but this will
+    // be picked up in a type-checking phase.
     return new ConstDef(type, id, assignment);
   }
 

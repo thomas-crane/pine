@@ -2,10 +2,10 @@ import * as util from 'util';
 import { Id } from '../expr/id';
 import { Expression } from '../expression';
 import { Statement } from '../statement';
-import { TypeDef } from './type';
+import { Type } from './type';
 
 export class ConstDef extends Statement {
-  constructor(public type: TypeDef, public id: Id, public assignment: Expression) {
+  constructor(public type: Type, public id: Id, public assignment: Expression) {
     super();
   }
 

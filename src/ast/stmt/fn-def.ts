@@ -2,7 +2,7 @@ import * as util from 'util';
 import { Id } from '../expr/id';
 import { Statement } from '../statement';
 import { BlockStatement } from './block-statement';
-import { TypeDef } from './type';
+import { Type } from './type';
 import { VarDef } from './var-def';
 
 export class FnDef extends Statement {
@@ -11,7 +11,7 @@ export class FnDef extends Statement {
     public isStatic: boolean,
     public args: VarDef[],
     public body: BlockStatement,
-    public returnType: TypeDef,
+    public returnType: Type,
   ) {
     super();
   }
