@@ -5,6 +5,7 @@ export enum NodeType {
   Num = 'Num',
   True = 'True',
   False = 'False',
+  Null = 'Null',
 
   // single tokens
   Semi = 'Semi',
