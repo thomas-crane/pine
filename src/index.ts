@@ -24,8 +24,7 @@ switch (cmd) {
       console.log('Please include a filename, e.g. "pine compile test.pine"');
       process.exit(0);
     }
-    const program = print(file);
-    console.log(program.toString());
+    print(file);
     break;
   default:
     console.log(usage);
