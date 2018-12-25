@@ -47,17 +47,14 @@ describe('Parser', () => {
     });
   });
   describe('#peek()', () => {
-    it('should return the next n node types.', () => {
+    it('should return the node type n nodes ahead.', () => {
       const parser = new Parser(EXPR_SAMPLE);
-      expect(parser.peek(3)).to.deep.equal([
-        NodeType.Div,
-        NodeType.LParen, NodeType.Num,
-      ]);
+      expect(parser.peek(4)).to.equal(EXPR_SAMPLE[3].type);
     });
     it('should not go past the end of the array.', () => {
       const parser = new Parser(EXPR_SAMPLE);
       expect(parser.peek(EXPR_SAMPLE.length + 10))
-        .to.deep.equal(EXPR_SAMPLE.slice(1).map((expr) => expr.type));
+        .to.equal(EXPR_SAMPLE[EXPR_SAMPLE.length - 1].type);
     });
   });
   describe('#accept()', () => {
@@ -96,7 +93,8 @@ describe('Parser', () => {
   describe('#statement()', () => {
     it('should return a Statement for statements.', () => {
       const parser = new Parser(STMT_SAMPLE);
-      expect(parser.statement()).instanceof(Statement);
+      const stmt = parser.statement();
+      expect(stmt instanceof Statement).to.equal(true);
     });
     it('should return undefined for expressions.', () => {
       const parser = new Parser(EXPR_SAMPLE);
