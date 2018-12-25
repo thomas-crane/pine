@@ -1,4 +1,3 @@
-import * as util from 'util';
 import { Expression } from '../expression';
 
 export class Null extends Expression {
@@ -6,7 +5,4 @@ export class Null extends Expression {
     super();
   }
 
-  toString() {
-    return util.inspect(this, false, Infinity, true);
-  }
 }

@@ -1,13 +1,10 @@
-import * as util from 'util';
 import { Expression } from '../expression';
+import { Type } from '../stmt/type';
 import { Id } from './id';
 
 export class TypeLiteral extends Expression {
-  constructor(public id: Id, public args: Map<Id, Expression>) {
+  constructor(public type: Type, public args: Map<Id, Expression>) {
     super();
   }
 
-  toString() {
-    return util.inspect(this, false, Infinity, true);
-  }
 }

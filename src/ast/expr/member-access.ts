@@ -1,4 +1,3 @@
-import * as util from 'util';
 import { Expression } from '../expression';
 import { FnCall } from './fn-call';
 import { Id } from './id';
@@ -9,7 +8,4 @@ export class MemberAccess extends Expression {
     super();
   }
 
-  toString() {
-    return util.inspect(this, false, Infinity, true);
-  }
 }
