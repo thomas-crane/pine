@@ -1,6 +1,5 @@
 import * as util from 'util';
-import { AST } from './ast';
-export abstract class Expression extends AST {
+export abstract class AST {
   toString() {
     return util.inspect(this, false, Infinity, true);
   }
